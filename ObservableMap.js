@@ -50,6 +50,10 @@ ObservableMap.prototype = {
     this._o();
     return this._m.keys()
   },
+  forEach: function (fn, the) {
+    this._o();
+    return this._m.forEach(fn, the)
+  },
   _get_size: function sizeProxy() {
     // We cannot seem to overload this._m.size
     this._o()
