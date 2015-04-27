@@ -1,0 +1,33 @@
+{
+  "name": "knockout-observablemap",
+  "version": "1.0.0",
+  "description": "Observable ES6 Map for Knockout",
+  "main": "ObservableMap.js",
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "karma-chai": "^0.1.0",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.8",
+    "karma-mocha": "^0.1.10",
+    "knockout": "^3.3.0"
+  },
+  "dependencies": {
+  },
+  "scripts": {
+    "test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://brianmhunt@github.com/brianmhunt/knockout-observablemap.git"
+  },
+  "keywords": [
+    "knockout",
+    "knockout-plugin"
+  ],
+  "author": "Brian M Hunt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brianmhunt/knockout-observablemap/issues"
+  },
+  "homepage": "https://github.com/brianmhunt/knockout-observablemap"
+}
