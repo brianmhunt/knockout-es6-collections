@@ -69,6 +69,10 @@ ObservableMap.prototype = {
   },
 }
 
+ObservableMap.prototype[Symbol.iterator] = function () {
+  return this._m.entries()
+}
+
 ko.observableMap = function (iterable) {
   return new ObservableMap(iterable)
 }
