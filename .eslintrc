@@ -1,0 +1,23 @@
+# Sample eslintrc:
+# http://bl.ocks.org/cletusw/e01a85e399ab563b1236
+rules:
+  indent:
+    - 2
+    - 4
+  quotes:
+    - 2
+    - double
+  linebreak-style:
+    - 2
+    - unix
+  semi:
+    - 2
+    - never
+  no-underscore-dangle: 0
+  no-sequences: 0
+  camelcase: 0
+env:
+  es6: true
+  browser: true
+globals:
+  ko: true

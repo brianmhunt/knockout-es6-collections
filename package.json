@@ -1,6 +1,6 @@
 {
   "name": "knockout-observablemap",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Observable ES6 Map for Knockout",
   "main": "ObservableMap.js",
   "devDependencies": {

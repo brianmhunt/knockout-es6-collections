@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/knockout/build/output/knockout-latest.js',
-      'ObservableMap.js',
+      'index.js',
       'test.js'
     ],
 
