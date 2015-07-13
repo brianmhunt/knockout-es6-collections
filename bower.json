@@ -1,0 +1,21 @@
+{
+  "name": "knockout-es6-collections",
+  "main": "index.js",
+  "homepage": "https://github.com/brianmhunt/knockout-es6-collections",
+  "authors": [
+    "Brian M Hunt <brianmhunt@gmail.com>"
+  ],
+  "description": "Set/Map/WeakSet/WeakMap for Knockout",
+  "keywords": [
+    "knockout",
+    "es6"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
