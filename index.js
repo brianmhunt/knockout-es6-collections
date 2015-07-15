@@ -45,11 +45,11 @@
             observers: ["entries", "values", "has", "forEach", "keys", "valueOf"]
         },
         WeakMap: {
-            mutators: ["add", "delete", "has"],
+            mutators: ["set", "delete", "has"],
             observers: ["valueOf"]
         },
         WeakSet: {
-            mutators: ["delete", "set"],
+            mutators: ["delete", "add"],
             observers: ["has", "get", "valueOf"]
         }
     }
@@ -57,7 +57,12 @@
     Object.keys(kinds).forEach(function (name) {
         var defn = kinds[name]
         function KeyClass(iterable) {
-            KeyCollection.call(this, window[name], iterable)
+            if (this instanceof KeyClass) {
+
+                KeyCollection.call(this, window[name], iterable)
+            } else {
+                return new KeyClass(iterable)
+            }
         }
         KeyClass.prototype = Object.create(KeyCollection.prototype)
         KeyClass.prototype.subscribe = function subscribe(fn, thisArg) {
@@ -86,8 +91,6 @@
         KeyClass.prototype[Symbol.iterator] = function () {
             return this._kc.entries()
         }
-        ko[name] = function(iterable) {
-            return new KeyClass(iterable)
-        }
+        ko[name] = KeyClass
     })
 })()

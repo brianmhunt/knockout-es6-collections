@@ -31,9 +31,11 @@ These functions also expose some Knockout observable functions, namely:
 
 ## Changelog
 
-15 Jul 2015 – 🐸  2.1.0
+15 Jul 2015 – 🐸  2.1.1
  - Fixed bugs with `ko.Set` and `ko.WeakSet`
  - Removed minified version since we have no auto-build process
+ - Create instance with either `ko.Set(...)`, etc., or `new ko.Set(...)`
+ - Fixed insertion properties for `WeakSet` and `WeakMap`
 
 ### Test
 

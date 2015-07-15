@@ -54,4 +54,25 @@ describe(" > ObservableMap", function () {
             done()
         })
     })
+
+    it("creates with 'new' keyword", function () {
+        var s = new ko.WeakSet()
+        assert.instanceOf(s, ko.WeakSet)
+        assert.instanceOf(s._kc, WeakSet)
+        var v = {}
+        s.add(v)
+        assert.equal(s.has(v), true)
+
+        var s = new ko.WeakMap()
+        assert.instanceOf(s, ko.WeakMap)
+        assert.instanceOf(s._kc, WeakMap)
+
+        var s = new ko.Set()
+        assert.instanceOf(s, ko.Set)
+        assert.instanceOf(s._kc, Set)
+
+        var s = new ko.Map()
+        assert.instanceOf(s, ko.Map)
+        assert.instanceOf(s._kc, Map)
+    })
 })
