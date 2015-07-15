@@ -24,10 +24,18 @@ be pooled together into one change.
 
 These functions also expose some Knockout observable functions, namely:
 
-- `subscribe(callback, thisArg)` where the callback receives the entire collection when called
+- `subscribe(callback[, thisArg])` where the callback receives the entire collection when called
 - `valueHasMutated()`
 - `getSubscriptionCount()`
 
+
+## Changelog
+
+15 Jul 2015 – 🐸  2.1.0
+ - Fixed bugs with `ko.Set` and `ko.WeakSet`
+ - Removed minified version since we have no auto-build process
+
 ### Test
 
-Run tests with `karma start`.
+Run tests with `karma start` (or if karma is not installed globally,
+  `./node_modules/karma/bin/karma start`).

@@ -9,7 +9,7 @@ Array.from = Array.from || function array_from_stub(iterable) {
 
 describe(" > ObservableMap", function () {
     it("performs map functions", function () {
-        var m = new ko.Map()
+        var m = ko.Map()
         m.set('a', 'b')
         assert.equal(m.get('a'), 'b', 'a')
         assert.equal(m.size, 1, 'ms1')
@@ -28,16 +28,29 @@ describe(" > ObservableMap", function () {
     })
 
     it("asynchronously recalculates dependencies on changes", function (done) {
-        var m = new ko.Map()
+        var m = ko.Map()
+        assert.notOk(m._mutatingMutex, "created")
         var x = ko.pureComputed(function () {
             return [m.size, Array.from(m)]
         })
         assert.deepEqual(x(), [0, []])
         m.set('a', 'b')
-        assert.ok(m._mutating, "mutating")
+        assert.ok(m._mutatingMutex, "mutating")
         x.subscribe(function () {
-            assert.notOk(m._mutating, "not mutating")
+            assert.notOk(m._mutatingMutex, "not mutating")
             assert.deepEqual(x(), [1, ['b']])
+            done()
+        })
+    })
+
+    it("creates an observable set", function (done) {
+        var s = ko.Set()
+        assert.equal(s.size, 0)
+        s.add("abc")
+        assert.equal(s.size, 1)
+        s.subscribe(function () {
+            assert.ok(s.has('abc'))
+            assert.equal(s.size, 1)
             done()
         })
     })
