@@ -10,10 +10,10 @@ Array.from = Array.from || function array_from_stub(iterable) {
 describe(" > ObservableMap", function () {
     it("performs map functions", function () {
         var m = new ko.Map()
-        m.set('a', 'b')
+        m.set('a', 'b')    // {'a' => 'b'}
         assert.equal(m.get('a'), 'b', 'a')
         assert.equal(m.size, 1, 'ms1')
-        assert.deepEqual(Array.from(m), ['b'], 'barr')
+        assert.deepEqual(Array.from(m.values()), ['b'], 'barr')
         assert.equal(m.has('a'), true, 'at')
         assert.equal(m.has('x'), false, 'xf')
         m.clear()
@@ -30,14 +30,19 @@ describe(" > ObservableMap", function () {
     it("asynchronously recalculates dependencies on changes", function (done) {
         var m = new ko.Map()
         var x = ko.pureComputed(function () {
-            return [m.size, Array.from(m)]
+            return [m.size, Array.from(m.values())]
         })
         assert.deepEqual(x(), [0, []])
         m.set('a', 'b')
+        m.set('a', 'c')
+        // The value is set immediately
+        assert.deepEqual(m.get('a'), 'c')
+        // The differences are not propagated immediately though
+        assert.deepEqual(x(), [0, []])
         assert.ok(m._mutating, "mutating")
         x.subscribe(function () {
             assert.notOk(m._mutating, "not mutating")
-            assert.deepEqual(x(), [1, ['b']])
+            assert.deepEqual(x(), [1, ['c']])
             done()
         })
     })

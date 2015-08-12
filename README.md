@@ -31,3 +31,12 @@ These functions also expose some Knockout observable functions, namely:
 ### Test
 
 Run tests with `karma start`.
+
+
+### Changelog
+
+#### 12 Aug 2014  🌵
+
+* (fix) Tests with canonical `Array.from`
+* work when `Symbol` is not defined
+* use `ko.tasks.schedule` if available

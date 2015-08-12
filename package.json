@@ -1,18 +1,18 @@
 {
   "name": "knockout-observablemap",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Observable ES6 Map for Knockout",
   "main": "ObservableMap.js",
   "devDependencies": {
     "chai": "^2.3.0",
-    "karma-chai": "^0.1.0",
+    "eslint": "^1.1.0",
     "karma": "^0.12.31",
+    "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.1.8",
     "karma-mocha": "^0.1.10",
     "knockout": "^3.3.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "scripts": {
     "test": "karma start"
   },

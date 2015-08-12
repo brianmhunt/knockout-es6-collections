@@ -9,6 +9,9 @@
 (function () {
     "use strict"
 
+    var iteratorSymbol = (window.Symbol && window.Symbol.iterator) || "__iter__"
+    var schedule = (ko.tasks && ko.tasks.schedule) || setTimeout
+
     function KeyCollection(KeyClass, iterable) {
         this.trigger = ko.observable(0)
         this._mutating = false
@@ -24,7 +27,7 @@
             var self = this
             self._mutating = true
             var o = this.trigger
-            setTimeout(function () {
+            schedule(function () {
                 self._mutating = false
                 o(o() + 1)
             }, 0)
