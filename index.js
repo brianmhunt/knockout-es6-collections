@@ -14,49 +14,45 @@
 
     function KeyCollection(KeyClass, iterable) {
         this.trigger = ko.observable(0)
-        this._mutating = false
+        this._mutatingMutex = false
         this._kc = new KeyClass(iterable)
-        Object.defineProperty(this, "size", {
-            get: this._get_size.bind(this)
-        })
     }
 
     KeyCollection.prototype = {
         constructor: KeyCollection,
-        _mutate: function () {
-            var self = this
-            self._mutating = true
-            var o = this.trigger
-            schedule(function () {
-                self._mutating = false
-                o(o() + 1)
-            }, 0)
+        _triggerMutate: function () {
+            if (this._mutatingMutex) { return }
+            this._mutatingMutex = true
+            schedule(this._propagateMutateEvent.bind(this), 0)
         },
-        _get_size: function _m_size_proxy() {
-            this.trigger()
-            return this._kc.size
+        _propagateMutateEvent: function () {
+            this._mutatingMutex = false
+            this.trigger(this.trigger() + 1)
         }
     }
 
+    Object.defineProperty(KeyCollection.prototype, "size", {
+        get: function () {
+            this.trigger()
+            return this._kc.size
+        }
+    })
+
     var kinds = {
         Map: {
-            ctr: Map,
             mutators: ["set", "clear", "delete"],
             observers: ["get", "has", "values", "keys", "entries", "forEach", "valueOf"]
         },
         Set: {
-            ctr: Set,
             mutators: ["add", "clear", "delete"],
             observers: ["entries", "values", "has", "forEach", "keys", "valueOf"]
         },
         WeakMap: {
-            ctr: WeakMap,
-            mutators: ["add", "delete", "has"],
+            mutators: ["set", "delete", "has"],
             observers: ["valueOf"]
         },
         WeakSet: {
-            ctr: WeakSet,
-            mutators: ["delete", "set"],
+            mutators: ["delete", "add"],
             observers: ["has", "get", "valueOf"]
         }
     }
@@ -64,24 +60,28 @@
     Object.keys(kinds).forEach(function (name) {
         var defn = kinds[name]
         function KeyClass(iterable) {
-            KeyCollection.call(this, defn.ctr, iterable)
-        }
-        KeyClass.prototype = Object.create(KeyCollection.prototype, {
-            subscribe: function (fn, thisArg) {
-                return this.trigger.subscribe(function () {
-                    fn.call(thisArg, this)
-                }, this)
-            },
-            getSubscriptionCount: function () {
-                return this.trigger.getSubscriptionCount()
-            },
-            valueHasMutated: function () {
-                return this.trigger.valueHasMutated()
+            if (this instanceof KeyClass) {
+
+                KeyCollection.call(this, window[name], iterable)
+            } else {
+                return new KeyClass(iterable)
             }
-        })
+        }
+        KeyClass.prototype = Object.create(KeyCollection.prototype)
+        KeyClass.prototype.subscribe = function subscribe(fn, thisArg) {
+            return this.trigger.subscribe(function () {
+                fn.call(thisArg, this)
+            }, this)
+        }
+        KeyClass.prototype.getSubscriptionCount = function getSubscriptionCount() {
+            return this.trigger.getSubscriptionCount()
+        }
+        KeyClass.prototype.valueHasMutated = function valueHasMutated() {
+            return this.trigger.valueHasMutated()
+        }
         defn.mutators.forEach(function (fn) {
             KeyClass.prototype[fn] = function () {
-                if (!this._mutating) { this._mutate() }
+                this._triggerMutate()
                 return this._kc[fn].apply(this._kc, arguments)
             }
         })

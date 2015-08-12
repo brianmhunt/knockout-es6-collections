@@ -24,19 +24,28 @@ be pooled together into one change.
 
 These functions also expose some Knockout observable functions, namely:
 
-- `subscribe(callback, thisArg)` where the callback receives the entire collection when called
+- `subscribe(callback[, thisArg])` where the callback receives the entire collection when called
 - `valueHasMutated()`
 - `getSubscriptionCount()`
+
+
+## Changelog
+
+12 Aug 2014 – 🌵2.2.0
+- (fix) Tests with canonical `Array.from`
+- work when `Symbol` is not defined
+- use `ko.tasks.schedule` if available
+
+
+15 Jul 2015 – 🐸  2.1.1
+ - Fixed bugs with `ko.Set` and `ko.WeakSet`
+ - Removed minified version since we have no auto-build process
+ - Create instance with either `ko.Set(...)`, etc., or `new ko.Set(...)`
+ - Fixed insertion properties for `WeakSet` and `WeakMap`
 
 ### Test
 
 Run tests with `karma start`.
 
-
-### Changelog
-
-#### 12 Aug 2014  🌵
-
-* (fix) Tests with canonical `Array.from`
-* work when `Symbol` is not defined
-* use `ko.tasks.schedule` if available
+Run tests with `karma start` (or if karma is not installed globally,
+  `./node_modules/karma/bin/karma start`).

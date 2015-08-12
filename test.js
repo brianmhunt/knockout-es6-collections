@@ -28,7 +28,8 @@ describe(" > ObservableMap", function () {
     })
 
     it("asynchronously recalculates dependencies on changes", function (done) {
-        var m = new ko.Map()
+        var m = ko.Map()
+        assert.notOk(m._mutatingMutex, "created")
         var x = ko.pureComputed(function () {
             return [m.size, Array.from(m.values())]
         })
@@ -39,11 +40,44 @@ describe(" > ObservableMap", function () {
         assert.deepEqual(m.get('a'), 'c')
         // The differences are not propagated immediately though
         assert.deepEqual(x(), [0, []])
-        assert.ok(m._mutating, "mutating")
+        assert.ok(m._mutatingMutex, "mutating")
         x.subscribe(function () {
-            assert.notOk(m._mutating, "not mutating")
+            assert.notOk(m._mutatingMutex, "not mutating")
             assert.deepEqual(x(), [1, ['c']])
             done()
         })
+    })
+
+    it("creates an observable set", function (done) {
+        var s = ko.Set()
+        assert.equal(s.size, 0)
+        s.add("abc")
+        assert.equal(s.size, 1)
+        s.subscribe(function () {
+            assert.ok(s.has('abc'))
+            assert.equal(s.size, 1)
+            done()
+        })
+    })
+
+    it("creates with 'new' keyword", function () {
+        var s = new ko.WeakSet()
+        assert.instanceOf(s, ko.WeakSet)
+        assert.instanceOf(s._kc, WeakSet)
+        var v = {}
+        s.add(v)
+        assert.equal(s.has(v), true)
+
+        var s = new ko.WeakMap()
+        assert.instanceOf(s, ko.WeakMap)
+        assert.instanceOf(s._kc, WeakMap)
+
+        var s = new ko.Set()
+        assert.instanceOf(s, ko.Set)
+        assert.instanceOf(s._kc, Set)
+
+        var s = new ko.Map()
+        assert.instanceOf(s, ko.Map)
+        assert.instanceOf(s._kc, Map)
     })
 })
