@@ -12,7 +12,7 @@ The collections created are:
 Each of the functions of the keyed collections either observes or mutates
 the collection.
 
-&nbsp; | Observes  | Mutates
+&nbsp; | Mutates | Observes
  --- | --- | ---
  Map | set, clear, delete | get, has, values, keys, entries, forEach, valueOf
  Set | add, clear, delete | entries, values, keys, has, forEach, valueOf
