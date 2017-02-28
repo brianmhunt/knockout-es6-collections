@@ -10,7 +10,6 @@
     "use strict"
     
     const SYMS = {
-        iterator: Symbol("Symbol::iterator"),
         mutex: Symbol("Mutex"),
         kc: Symbol("Entity Class Instance"),
         trigger: Symbol("Observable Trigger"),
@@ -118,7 +117,7 @@
         })
         
         if (defn.iterFn) {
-            KeyClass.prototype[SYMS.iterator] = function () {
+            KeyClass.prototype[Symbol.iterator] = function () {
                 return this[SYMS.kc][defn.iterFn]()
             }
         }

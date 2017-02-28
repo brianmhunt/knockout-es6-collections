@@ -35,7 +35,7 @@ These functions also expose some Knockout observable functions, namely:
 - Fix Set iterator returning entities instead of values
 - Hid all functions behind symbols
 - Gave constructors useful names (instead of all being `KeyClass`)
-
+- [3.0.1] Fix Symbol.iterator
 
 12 Aug 2014 – 🌵2.2.0
 - (fix) Tests with canonical `Array.from`

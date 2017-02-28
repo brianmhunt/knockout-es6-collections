@@ -91,15 +91,29 @@ describe(" > ObservableMap", function () {
         assert.instanceOf(s[kc], Map)
     })
     
-    it("iterates over entities of a map", function () {
+    it("iterates over entities of a map", function (done) {
         const m = ko.Map()
         const x = {}
         m.set(x, "alpha")
-        m.subscribe(() => assert.deepEqual(Array.from(s), [[x, 'alpha']]))
+        m.subscribe(() => {
+            assert.deepEqual(Array.from(m), [[x, 'alpha']])
+            done()
+        })
     })
     
     it("iterates over values of a set", function () {
         s = ko.Set([1, 2, 3])
-        s.subscribe(() => assert.deepEqual(Array.from(s).sort(), [1,2,3]))
+        s.subscribe(() => {
+            assert.deepEqual(Array.from(s).sort(), [1,2,3])
+            done()
+        })
+    })
+
+    it("is iterable by the primitive Symbol.iterator", function () {
+        const s = ko.Set()
+        s.add('1236')
+        for (const x of s) {
+           assert.equal(x, '1236')
+        }
     })
 })
