@@ -8,6 +8,16 @@ Array.from = Array.from || function array_from_stub(iterable) {
 }
 
 describe(" > ObservableMap", function () {
+    
+    const {
+        iterator, mutex, kc, trigger, tm, pm
+    } = ko.Map['@@SYMS']
+    
+    it("constructs without `new`", function () {
+        var m = ko.Map()
+        assert.instanceOf(m, ko.Map)
+    })
+    
     it("performs map functions", function () {
         var m = new ko.Map()
         m.set('a', 'b')    // {'a' => 'b'}
@@ -29,7 +39,7 @@ describe(" > ObservableMap", function () {
 
     it("asynchronously recalculates dependencies on changes", function (done) {
         var m = ko.Map()
-        assert.notOk(m._mutatingMutex, "created")
+        assert.notOk(m[mutex], "created")
         var x = ko.pureComputed(function () {
             return [m.size, Array.from(m.values())]
         })
@@ -40,9 +50,9 @@ describe(" > ObservableMap", function () {
         assert.deepEqual(m.get('a'), 'c')
         // The differences are not propagated immediately though
         assert.deepEqual(x(), [0, []])
-        assert.ok(m._mutatingMutex, "mutating")
+        assert.ok(m[mutex], "mutating")
         x.subscribe(function () {
-            assert.notOk(m._mutatingMutex, "not mutating")
+            assert.notOk(m[mutex], "not mutating")
             assert.deepEqual(x(), [1, ['c']])
             done()
         })
@@ -63,21 +73,33 @@ describe(" > ObservableMap", function () {
     it("creates with 'new' keyword", function () {
         var s = new ko.WeakSet()
         assert.instanceOf(s, ko.WeakSet)
-        assert.instanceOf(s._kc, WeakSet)
+        assert.instanceOf(s[kc], WeakSet)
         var v = {}
         s.add(v)
         assert.equal(s.has(v), true)
 
         var s = new ko.WeakMap()
         assert.instanceOf(s, ko.WeakMap)
-        assert.instanceOf(s._kc, WeakMap)
+        assert.instanceOf(s[kc], WeakMap)
 
         var s = new ko.Set()
         assert.instanceOf(s, ko.Set)
-        assert.instanceOf(s._kc, Set)
+        assert.instanceOf(s[kc], Set)
 
         var s = new ko.Map()
         assert.instanceOf(s, ko.Map)
-        assert.instanceOf(s._kc, Map)
+        assert.instanceOf(s[kc], Map)
+    })
+    
+    it("iterates over entities of a map", function () {
+        const m = ko.Map()
+        const x = {}
+        m.set(x, "alpha")
+        m.subscribe(() => assert.deepEqual(Array.from(s), [[x, 'alpha']]))
+    })
+    
+    it("iterates over values of a set", function () {
+        s = ko.Set([1, 2, 3])
+        s.subscribe(() => assert.deepEqual(Array.from(s).sort(), [1,2,3]))
     })
 })

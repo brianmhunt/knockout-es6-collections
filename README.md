@@ -31,6 +31,12 @@ These functions also expose some Knockout observable functions, namely:
 
 ## Changelog
 
+28 Feb 2017 -  🦐  3.0.0
+- Fix Set iterator returning entities instead of values
+- Hid all functions behind symbols
+- Gave constructors useful names (instead of all being `KeyClass`)
+
+
 12 Aug 2014 – 🌵2.2.0
 - (fix) Tests with canonical `Array.from`
 - work when `Symbol` is not defined

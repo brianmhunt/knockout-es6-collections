@@ -8,92 +8,121 @@
 
 (function () {
     "use strict"
-
-    var iteratorSymbol = (window.Symbol && window.Symbol.iterator) || "__iter__"
-    var schedule = (ko.tasks && ko.tasks.schedule) || setTimeout
-
-    function KeyCollection(KeyClass, iterable) {
-        this.trigger = ko.observable(0)
-        this._mutatingMutex = false
-        this._kc = new KeyClass(iterable)
+    
+    const SYMS = {
+        iterator: Symbol("Symbol::iterator"),
+        mutex: Symbol("Mutex"),
+        kc: Symbol("Entity Class Instance"),
+        trigger: Symbol("Observable Trigger"),
+        tm: Symbol("Trigger Mutation Fn"),
+        pm: Symbol("Trigger Propagate Mutation Fn"),
     }
+    const schedule = (ko.tasks && ko.tasks.schedule) || setTimeout
 
+    function KeyCollection(WrappedClass, iterable) {
+        this[SYMS.trigger] = ko.observable(0)
+        this[SYMS.mutex] = false
+        this[SYMS.kc] = new WrappedClass(iterable)
+    }
+    
     KeyCollection.prototype = {
         constructor: KeyCollection,
-        _triggerMutate: function () {
-            if (this._mutatingMutex) { return }
-            this._mutatingMutex = true
-            schedule(this._propagateMutateEvent.bind(this), 0)
+        [SYMS.tm]: function () {
+            if (this[SYMS.mutex]) { return }
+            this[SYMS.mutex] = true
+            schedule(this[SYMS.pm].bind(this), 0)
         },
-        _propagateMutateEvent: function () {
-            this._mutatingMutex = false
-            this.trigger(this.trigger() + 1)
+        [SYMS.pm]: function () {
+            this[SYMS.mutex] = false
+            this[SYMS.trigger](this[SYMS.trigger]() + 1)
         }
     }
 
     Object.defineProperty(KeyCollection.prototype, "size", {
         get: function () {
-            this.trigger()
-            return this._kc.size
+            this[SYMS.trigger]()
+            return this[SYMS.kc].size
         }
     })
-
-    var kinds = {
+    
+    function ctr(ObsClass, Es6, iter) {
+        if (this instanceof ObsClass) {
+            KeyCollection.call(this, Es6, iter)
+        } else {
+            return new ObsClass(iter)
+        }
+    }
+    
+    function KoMap(iter) { return ctr.call(this, KoMap, Map, iter) }
+    function KoSet(iter) { return ctr.call(this, KoSet, Set, iter) }
+    function KoWeakMap(iter) { return ctr.call(this, KoWeakMap, WeakMap, iter) }
+    function KoWeakSet(iter) { return ctr.call(this, KoWeakSet, WeakSet, iter) }
+    
+    const kinds = {
         Map: {
+            Ctr: KoMap,
             mutators: ["set", "clear", "delete"],
-            observers: ["get", "has", "values", "keys", "entries", "forEach", "valueOf"]
+            observers: ["get", "has", "values", "keys", "entries", "forEach", "valueOf"],
+            iterFn: "entries",
         },
         Set: {
+            Ctr: KoSet,
             mutators: ["add", "clear", "delete"],
-            observers: ["entries", "values", "has", "forEach", "keys", "valueOf"]
+            observers: ["entries", "values", "has", "forEach", "keys", "valueOf"],
+            iterFn: "values"
         },
         WeakMap: {
+            Ctr: KoWeakMap,
             mutators: ["set", "delete", "has"],
             observers: ["valueOf"]
         },
         WeakSet: {
+            Ctr: KoWeakSet,
             mutators: ["delete", "add"],
             observers: ["has", "get", "valueOf"]
         }
     }
 
     Object.keys(kinds).forEach(function (name) {
-        var defn = kinds[name]
-        function KeyClass(iterable) {
-            if (this instanceof KeyClass) {
-
-                KeyCollection.call(this, window[name], iterable)
-            } else {
-                return new KeyClass(iterable)
-            }
-        }
+        const defn = kinds[name]
+        const KeyClass = defn.Ctr
+        KeyClass["@@SYMS"] = SYMS
         KeyClass.prototype = Object.create(KeyCollection.prototype)
-        KeyClass.prototype.subscribe = function subscribe(fn, thisArg) {
-            return this.trigger.subscribe(function () {
-                fn.call(thisArg, this)
-            }, this)
-        }
-        KeyClass.prototype.getSubscriptionCount = function getSubscriptionCount() {
-            return this.trigger.getSubscriptionCount()
-        }
-        KeyClass.prototype.valueHasMutated = function valueHasMutated() {
-            return this.trigger.valueHasMutated()
-        }
+        
+        Object.assign(KeyClass.prototype, {
+            subscribe(fn, thisArg) {
+                return this[SYMS.trigger].subscribe(function () {
+                    fn.call(thisArg, this)
+                }, this)
+            },
+            getSubscriptionCount() {
+                return this[SYMS.trigger].getSubscriptionCount()
+            },
+            valueHasMutated() {
+                return this[SYMS.trigger].valueHasMutated()
+            }
+        })
+        
         defn.mutators.forEach(function (fn) {
             KeyClass.prototype[fn] = function () {
-                this._triggerMutate()
-                return this._kc[fn].apply(this._kc, arguments)
+                this[SYMS.tm]()
+                return this[SYMS.kc][fn].apply(this[SYMS.kc], arguments)
             }
         })
+        
         defn.observers.forEach(function(fn) {
             KeyClass.prototype[fn] = function () {
-                this.trigger() // Create dependency.
-                return this._kc[fn].apply(this._kc, arguments)
+                this[SYMS.trigger]() // Create dependency.
+                return this[SYMS.kc][fn].apply(this[SYMS.kc], arguments)
             }
         })
-        KeyClass.prototype[Symbol.iterator] = function () {
-            return this._kc.entries()
+        
+        if (defn.iterFn) {
+            KeyClass.prototype[SYMS.iterator] = function () {
+                return this[SYMS.kc][defn.iterFn]()
+            }
         }
+        
         ko[name] = KeyClass
     })
 })()
