@@ -31,6 +31,11 @@ These functions also expose some Knockout observable functions, namely:
 
 ## Changelog
 
+31 Mar 2017 - 🐠 3.1.0
+- Fix getSubscription[s]Count
+- Add `.peek` to the observers e.g. `map.values.peek()` or `map.has.peek('x')`
+- NOTE: This version uses `() => ...` and spreads, so may need transpiling.
+
 28 Feb 2017 -  🦐  3.0.0
 - Fix Set iterator returning entities instead of values
 - Hid all functions behind symbols

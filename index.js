@@ -22,6 +22,11 @@
         this[SYMS.trigger] = ko.observable(0)
         this[SYMS.mutex] = false
         this[SYMS.kc] = new WrappedClass(iterable)
+        kinds[WrappedClass.name]
+            .observers
+            .forEach((fn) =>
+                this[fn].peek = (...args) => this[SYMS.kc][fn](...args)
+            )
     }
     
     KeyCollection.prototype = {
@@ -94,8 +99,8 @@
                     fn.call(thisArg, this)
                 }, this)
             },
-            getSubscriptionCount() {
-                return this[SYMS.trigger].getSubscriptionCount()
+            getSubscriptionsCount() {
+                return this[SYMS.trigger].getSubscriptionsCount()
             },
             valueHasMutated() {
                 return this[SYMS.trigger].valueHasMutated()

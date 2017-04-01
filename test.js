@@ -116,4 +116,37 @@ describe(" > ObservableMap", function () {
            assert.equal(x, '1236')
         }
     })
+    
+    it("adds dependency subscriptions", function () {
+        var callCount = 0
+        var y = ko.Map()
+        var x = ko.computed(function () {
+            callCount++;
+            y.values()
+        })
+        assert.equal(callCount, 1)
+        assert.equal(y.getSubscriptionsCount(), 1)
+    })
+    
+    it("respects ignoreDependencies", function () {
+        var callCount = 0
+        var y = ko.Map()
+        var x = ko.computed(function () {
+            callCount++;
+            ko.ignoreDependencies(function () { y.values(); })
+        })
+        assert.equal(callCount, 1)
+        assert.equal(y.getSubscriptionsCount(), 0)
+    })
+    
+    it("exposes .peek functions", function () {
+        var callCount = 0
+        var y = ko.Map()
+        var x = ko.computed(function () {
+            callCount++;
+            y.values.peek()
+        })
+        assert.equal(callCount, 1)
+        assert.equal(y.getSubscriptionsCount(), 0)
+    })
 })
