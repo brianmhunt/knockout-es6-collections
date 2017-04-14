@@ -31,6 +31,9 @@ These functions also expose some Knockout observable functions, namely:
 
 ## Changelog
 
+14 Apr 2017 – 🍤 3.1.1
+- Fix WeakMap.get
+
 31 Mar 2017 - 🐠 3.1.0
 - Fix getSubscription[s]Count
 - Add `.peek` to the observers e.g. `map.values.peek()` or `map.has.peek('x')`
