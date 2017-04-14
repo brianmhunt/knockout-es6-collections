@@ -78,7 +78,7 @@
         WeakMap: {
             Ctr: KoWeakMap,
             mutators: ["set", "delete", "has"],
-            observers: ["valueOf"]
+            observers: ["get", "valueOf"]
         },
         WeakSet: {
             Ctr: KoWeakSet,
